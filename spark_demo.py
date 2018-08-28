@@ -3,7 +3,7 @@
 """
 @author: Link 
 @contact: zheng.long@shoufuyou.com
-@module: test 
+@module: spark_demo
 @date: 8/15/18 
 """
 import json
@@ -79,8 +79,8 @@ def to_df1():
     # 必须注册为临时表才能供下面的查询使用
     df.createOrReplaceTempView('people')
 
-    people_df = ss.sql('select * from people')
-    # people_df = ss.sql('select * from people where age > "19"')
+    # people_df = ss.sql('select * from people')
+    people_df = ss.sql('select * from people where age > "19"')
 
     def g(t):
         return 'Name:' + t['name'] + ', ' + 'Age:' + t['age']
@@ -144,6 +144,10 @@ def d_streaming1():
 
 
 def d_streaming2():
+    """
+    $ nc -lk 9999
+    :return:
+    """
     conf = SparkConf()
     conf.setAppName('TestDStream')
     conf.setMaster('local[2]')
@@ -206,33 +210,17 @@ def d_streaming_save():
     wc = wc.map(lambda x: (x, 1))
     wc = wc.updateStateByKey(update_func, initialRDD=initial_state_rdd)
 
-    # wc.saveAsTextFiles(streaming+'/output.txt')
+    wc.saveAsTextFiles(streaming+'/output.txt')
 
     wc.pprint()
     ssc.start()
-    print('listening')
     ssc.awaitTermination()
     ssc.stop()
 
 
 if __name__ == '__main__':
     # d_streaming_save()
-    word_count()
-    # d_streaming2()
-
-# http://192.168.1.248/HDP/centos7/3.0.0.0-1634
-# http://public-repo-1.hortonworks.com/HDP-GPL/centos7/3.x/updates/3.0.0.0
-# http://public-repo-1.hortonworks.com/HDP-GPL/centos7/3.x/updates/3.0.0.0
-# http://192.168.1.248/HDP-UTILS/centos7/1.1.0.22
-
-# JAVA_HOME=/usr/java/jdk1.8.0_181-amd64
-# CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
-# PATH=$JAVA_HOME/bin:$PATH:$HOME/.local/bin:$HOME/bin
-#
-# export CLASSPATH
-# export JAVA_HOME
-# export PATH
-
-# admin
-# ambari-server setup --jdbc-db=mysql --jdbc-driver=/path/to/mysql/com.mysql.jdbc.Driver
-
+    # word_count()
+    d_streaming2()
+    # data_frame1()
+    # to_df2()

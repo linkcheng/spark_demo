@@ -1,5 +1,4 @@
-In this tutorial, we will provide an overview of Apache Spark, it’s relationship with Scala, Zeppelin notebooks, Interpreters, Datasets and DataFrames. Finally, we will showcase Apache Zeppelin notebook for our development environment to keep things simple and elegant.
-
-Zeppelin will allow us to run in a pre-configured environment and execute code written for Spark in Scala and SQL, a few basic Shell commands, pre-written Markdown directions, and an HTML formatted table.
-
-To make things fun and interesting, we will introduce a film series dataset from the Silicon Valley Comedy TV show and perform some basic operations with Spark in Zeppelin.
+hadoop spark
+spark apache
+spark hadoop
+apache hadoop
