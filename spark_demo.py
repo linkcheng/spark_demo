@@ -220,7 +220,7 @@ def d_streaming_save():
 
 if __name__ == '__main__':
     # d_streaming_save()
-    # word_count()
-    d_streaming2()
+    word_count()
+    # d_streaming2()
     # data_frame1()
     # to_df2()
