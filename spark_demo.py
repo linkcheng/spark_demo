@@ -7,20 +7,20 @@
 @date: 8/15/18 
 """
 import json
-import time
+# import time
 from operator import add
 
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import Row, SparkSession
 from pyspark.streaming import StreamingContext
 
-json_file = 'file:///Users/zhenglong/proj/spark_demo/people.json'
-txt_file = 'file:///Users/zhenglong/proj/spark_demo/people.txt'
+json_file = 'file:///Users/zhenglong/proj/spark_demo/data/people.json'
+txt_file = 'file:///Users/zhenglong/proj/spark_demo/data/people.txt'
 
 
 def word_count():
     """word count"""
-    word_file = 'file:///Users/zhenglong/proj/spark_demo/work.txt'
+    word_file = 'file:///Users/zhenglong/proj/spark_demo/data/work.txt'
 
     sc = SparkContext('local', 'test')
 
@@ -218,9 +218,38 @@ def d_streaming_save():
     ssc.stop()
 
 
+def structured_streaming_demo():
+    """
+    nc -lk 9999
+    :return:
+    """
+    from pyspark.sql import SparkSession
+    from pyspark.sql.functions import explode, split
+
+    spark = SparkSession.builder.appName('StructuredNetworkWordCount').getOrCreate()
+    lines = spark.readStream.format('socket').\
+        option('host', 'localhost').\
+        option('port', 9999).\
+        load()
+
+    words = lines.select(
+        explode(
+            split(lines.value, ' ')
+        ).alias('word')
+    )
+
+    wc = words.groupBy('word').count()
+    query = wc.writeStream.outputMode('complete').\
+        format('console').\
+        start()
+    query.awaitTermination()
+    query.stop()
+
+
 if __name__ == '__main__':
     # d_streaming_save()
-    word_count()
+    # word_count()
     # d_streaming2()
     # data_frame1()
     # to_df2()
+    structured_streaming_demo()

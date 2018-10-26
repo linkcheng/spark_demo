@@ -147,8 +147,7 @@ def test3():
 
     @zk.ChildrenWatch(mysql, send_event=True)
     def children_watcher(children, event):
-        print(
-            f'{root} children_watcher children :{children}, event: {event}')
+        print(f'{root} children_watcher children :{children}, event: {event}')
 
     @zk.DataWatch(passwd)
     def child_data_watcher(value, state, event):
@@ -173,5 +172,5 @@ if __name__ == "__main__":
     try:
         test3()
     except Exception as e:
-        print("Ocurred Exception: %s" % str(e))
+        print("Occurred Exception: %s" % str(e))
         quit()
