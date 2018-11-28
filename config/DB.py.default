@@ -1,0 +1,17 @@
+# -*- coding: utf-8 -*-
+
+driver = 'com.mysql.jdbc.Driver'
+url = 'jdbc:mysql://127.0.0.1:3306'
+dbtable = 'db.user'
+user = 'root'
+password = '12345678'
+
+
+DB_CONFIG = {
+    'host': '127.0.0.1',
+    'port': 3306,
+    'user': 'root',
+    'password': '12345678',
+    'db': 'test',
+    'charset': 'utf8',
+}

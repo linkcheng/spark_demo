@@ -9,7 +9,7 @@ TOPIC = 'test_kafka_topic'
 def producer():
     client = KafkaClient(hosts=hosts)
     # 查看所有的topic
-    client.topics
+    # client.topics
     print(client.topics)
 
     # 选择一个topic
@@ -20,11 +20,11 @@ def producer():
     with topic.get_sync_producer() as producer:
         producer.produce(message)
 
-    # 但生产环境，为了达到高吞吐量，要采用异步的方式，通过 delivery_reports = True 来启用队列接口
     with topic.get_sync_producer() as producer:
         producer.produce('test message', partition_key='1')
 
-    producer = topic.get_producer()
+    # 但生产环境，为了达到高吞吐量，要采用异步的方式，通过 delivery_reports = True 来启用队列接口
+    producer = topic.get_producer(delivery_reports=True)
     producer.produce(message)
     producer.stop()
 

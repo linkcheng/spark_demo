@@ -7,8 +7,8 @@
 @date: 8/15/18 
 """
 import json
-# import time
 from operator import add
+import random
 
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import Row, SparkSession
@@ -244,6 +244,56 @@ def structured_streaming_demo():
         start()
     query.awaitTermination()
     query.stop()
+
+
+
+def topn(key, iter):
+    sorted_iter = sorted(iter, reverse=True)
+    length = len(sorted_iter)
+    return map(lambda x: (key, x), sorted_iter[:min(length, 3)])
+
+
+def top3_1():
+    rint = random.randint
+    top_file = 'file:///Users/zhenglong/proj/spark_demo/data/top.txt'
+    sc = SparkContext('local[*]', 'test')
+    rdd = sc.textFile(top_file)
+    ret = rdd.map(lambda line: line.split(' ')) \
+        .filter(lambda e: len(e) == 2) \
+        .mapPartitions(lambda iter: map(lambda e: ((rint(1, 10), e[0]), e[1]), iter)) \
+        .groupByKey() \
+        .flatMap(lambda e: topn(e[0][1], e[1])) \
+        .groupByKey() \
+        .flatMap(lambda e: topn(e[0], e[1])) \
+        .collect()
+    print(ret)
+
+
+def f(a, b):
+    # print(a, b)
+    a.append(b)
+    sorted_a = sorted(a, reverse=True)
+    return sorted_a[:min(len(sorted_a), 3)]
+
+
+def g(a, b):
+    print(a, b)
+    a.extend(b)
+    sorted_a = sorted(a, reverse=True)
+    return sorted_a[:min(len(sorted_a), 3)]
+
+
+def top3():
+    top_file = 'file:///Users/zhenglong/proj/spark_demo/data/top.txt'
+    sc = SparkContext('local[*]', 'test')
+    rdd = sc.textFile(top_file)
+    ret = rdd.map(lambda line: line.split(' ')) \
+        .filter(lambda e: len(e) == 2) \
+        .aggregateByKey(zeroValue=[],
+                        seqFunc=lambda a, b: f(a, b),
+                        combFunc=lambda a, b: g(a, b)) \
+        .collect()
+    print(ret)
 
 
 if __name__ == '__main__':
