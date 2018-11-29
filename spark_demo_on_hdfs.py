@@ -6,7 +6,9 @@
 @module: spark_demo
 @date: 11/15/2018 
 """
+import time
 import json
+import random
 from datetime import datetime, timedelta, date
 
 import pymysql
@@ -15,6 +17,9 @@ from pykafka import KafkaClient
 
 from pyspark import SparkContext
 from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType, StructField
+from pyspark.sql.types import StringType, TimestampType
+from pyspark.sql.functions import from_json, window
 
 from config.DB import driver, url, user, password, dbtable_v2_user, DB_CONFIG
 
@@ -53,7 +58,7 @@ def read_mysql():
 class DateEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, datetime):
-            return obj.strftime('%Y-%m-%d %H:%M:%S')
+            return obj.strftime(FMT)
         elif isinstance(obj, date):
             return obj.strftime("%Y-%m-%d")
         else:
@@ -81,8 +86,6 @@ class DBHelper(object):
 
 
 def get_users():
-    import time
-
     db = DBHelper(**DB_CONFIG)
     cursor = db.cr
 
@@ -121,7 +124,7 @@ class User:
         now = datetime.now()
         start_str = (now - timedelta(minutes=5)).strftime(FMT)
         end_str = now.strftime(FMT)
-        keys = ['id', 'mobile', 'name', 'gender', 'app_source', 'created_time']
+        keys = ['mobile', 'name', 'created_time']
         sql = """SELECT %s FROM shoufuyou_v2.User 
             WHERE created_time>=%s and created_time<%s"""
 
@@ -134,7 +137,7 @@ class User:
         self.db.close()
 
 
-def produce_users():
+def produce_users_from_db():
     hosts = "192.168.30.141:6667,192.168.30.140:6667,192.168.30.139:6667"
     topic = "shoufuyou_v2.User1"
 
@@ -149,17 +152,32 @@ def produce_users():
             prod.produce(user)
 
 
+def produce_users():
+    hosts = "192.168.30.141:6667,192.168.30.140:6667,192.168.30.139:6667"
+    topic = "shoufuyou_v2.User1"
+
+    client = KafkaClient(hosts=hosts)
+    # 选择一个topic
+    topic = client.topics[topic]
+
+    with topic.get_sync_producer() as prod:
+        for i in range(1000):
+            user = {
+                'mobile': 'mobile' + str(i),
+                'name': 'name' + str(i),
+                'created_time': datetime.now().strftime(FMT)
+            }
+            print(user)
+            time.sleep(random.randint(1, 10))
+            prod.produce(json.dumps(user))
+
+
 def read_kafka():
     """
     ./bin/pyspark --queue default --master yarn --deploy-mode client
     """
-    from pyspark.sql import SparkSession
-    from pyspark.sql.types import StructType
-    from pyspark.sql.types import StringType, IntegerType, TimestampType
-    from pyspark.sql.functions import from_json, window
-
     hosts = "192.168.30.141:6667,192.168.30.140:6667,192.168.30.139:6667"
-    topic = "shoufuyou_v2.User1"
+    topic = "shoufuyou_v2.User"
 
     spark = SparkSession.builder.master('yarn').appName("GetUsers").getOrCreate()
 
@@ -170,46 +188,51 @@ def read_kafka():
         .option("failOnDataLoss", False) \
         .load()
     events = events.selectExpr("CAST(value AS STRING)")
-    schema = StructType() \
-        .add("id", IntegerType(), True) \
-        .add("mobile", StringType(), True) \
-        .add("name", StringType(), True) \
-        .add("email", StringType(), True) \
-        .add("created_time", TimestampType(), True)
+    schema = StructType([
+        StructField("mobile", StringType(), True),
+        StructField("name", StringType(), True),
+        StructField("created_time", TimestampType(), True),
+    ])
 
-    data = events.select(from_json(events.value, schema).alias("User"))
+    data = events.select(from_json(events.value, schema).alias("User")) \
+        .selectExpr("User.mobile", "User.name", "User.created_time")
+    data.createOrReplaceTempView("NewUser")
+    user_count = data.withWatermark("created_time", "10 minutes") \
+        .groupBy(window("created_time", "5 minutes", "5 minutes")).count() \
+        .selectExpr("window.start", "window.end", "count")
 
-    data.createOrReplaceTempView("User")
-    new_user = spark.sql("select User.id, User.mobile, User.name, User.created_time from User")
-    new_user.createOrReplaceTempView("NewUser")
-    user_count = new_user.withWatermark("created_time", "15 minutes") \
-        .groupBy(window(new_user.created_time, "5 minutes", "5 minutes")).count()
+    # spark.sql("select * from User4").show()
 
-    # user_count.createOrReplaceTempView("UserCount")
-    # quantity = spark.sql("select window.end, count from UserCount")
-    # count = quantity.withWatermark("end", "15 minutes") \
-    #     .groupBy(window(quantity.end, "5 minutes", "5 minutes")).count()
-
-
-    # query = new_user \
+    # query1 = user_count \
+    #     .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)") \
     #     .writeStream \
-    #     .outputMode("append") \
-    #     .format("memory") \
-    #     .trigger(processingTime='60 seconds') \
-    #     .queryName("User") \
+    #     .format("kafka") \
+    #     .option("kafka.bootstrap.servers", hosts) \
+    #     .option("topic", "user_count") \
+    #     .option("checkpointLocation", "/data/spark/checkpoint") \
+    #     .outputMode("update") \
+    #     .trigger(processingTime='5 minutes') \
+    #     .queryName("user_count") \
     #     .start()
 
-    query2 = user_count \
+    # query1 = user_count \
+    #     .writeStream \
+    #     .outputMode("append") \
+    #     .format("console") \
+    #     .trigger(processingTime='5 minutes') \
+    #     .queryName("User1") \
+    #     .start()
+
+    query1 = user_count \
         .writeStream \
         .outputMode("update") \
         .format("console") \
-        .trigger(processingTime='60 seconds') \
-        .queryName("User2") \
+        .trigger(processingTime='5 minutes') \
+        .queryName("User1") \
         .start()
 
-    query2.awaitTermination()
-
-    query2.stop()
+    query1.awaitTermination()
+    query1.stop()
 
 
 def tf_demo():

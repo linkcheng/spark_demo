@@ -31,6 +31,28 @@ def producer():
     print(message)
 
 
+def produce_users():
+    from datetime import datetime
+    import time
+    import json
+    hosts = "192.168.30.141:6667,192.168.30.140:6667,192.168.30.139:6667"
+    topic = "shoufuyou_v2.User1"
+
+    client = KafkaClient(hosts=hosts)
+    # 选择一个topic
+    topic = client.topics[topic]
+
+    with topic.get_sync_producer() as prod:
+        for i in range(1000):
+            user = {
+                'mobile': 'mobile' + str(i),
+                'name': 'name' + str(i),
+                'created_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            }
+            prod.produce(json.dumps(user))
+            time.sleep(10)
+
+
 def consumer():
     client = KafkaClient(hosts=hosts)
     topic = client.topics[TOPIC]
