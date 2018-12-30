@@ -12,15 +12,17 @@
 
 from PIL import Image
 import numpy as np
-from dataset.mnist import load_mnist
+from recognize.dataset.mnist import load_mnist
 
 
 def img_show(img):
+    """展示单张照片"""
     pil_img = Image.fromarray(np.uint8(img))
     pil_img.show()
 
 
 def get_data(normalize, flatten):
+    """读取数据"""
     (x_train, t_train), (x_test, t_test) = load_mnist(normalize=normalize,
                                                       flatten=flatten)
     # print(x_train.shape)
@@ -30,12 +32,22 @@ def get_data(normalize, flatten):
     return (x_train, t_train), (x_test, t_test)
 
 
+def print_data(n):
+    """展示训练集中前 n 张照片"""
+    (x_train, t_train), (x_test, t_test) = get_data(normalize=False,
+                                                    flatten=True)
+    print(x_train.shape)  # 60000 张 28*28=784 像素的照片
+    print(x_test.shape)
+    for i in range(n):
+        img = x_train[i]
+        label = t_train[i]
+        print(label)
+        print(img.shape)
+        # 改变图片性状，原来是一位数组，图片是二维的
+        img = img.reshape(28, 28)
+        print(img.shape)
+        img_show(img)
+
+
 if __name__ == '__main__':
-    (x_train, t_train), (x_test, t_test) = get_data(normalize=False, flatten=True)
-    img = x_train[0]
-    label = t_train[0]
-    print(label)
-    print(img.shape)
-    img = img.reshape(28, 28)
-    print(img.shape)
-    img_show(img)
+    print_data(1)
