@@ -21,10 +21,11 @@ def img_show(img):
     pil_img.show()
 
 
-def get_data(normalize, flatten):
+def get_data(normalize=True, flatten=True, one_hot_label=False):
     """读取数据"""
     (x_train, t_train), (x_test, t_test) = load_mnist(normalize=normalize,
-                                                      flatten=flatten)
+                                                      flatten=flatten,
+                                                      one_hot_label=one_hot_label)
     # print(x_train.shape)
     # print(t_train.shape)
     # print(x_test.shape)
