@@ -195,7 +195,3 @@ def handle():
 if __name__ == "__main__":
     handle_example()
 
-import pandas as pd
-data = {}
-df = pd.DataFrame(data)
-df.dropna()
