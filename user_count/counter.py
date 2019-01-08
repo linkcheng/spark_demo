@@ -7,20 +7,24 @@
 @date: 11/30/18 
 """
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import from_json, window, concat_ws, decode
-from pyspark.sql.types import (
-    StructField,
-    StructType,
-    StringType,
-    TimestampType,
-    ArrayType,
-    LongType,
-    IntegerType,
-    ShortType,
-    ByteType,
-    BooleanType,
-    NullType
-)
+# from pyspark.sql.functions import from_json, window, concat_ws, decode
+# from pyspark.sql.types import (
+#     StructField,
+#     StructType,
+#     StringType,
+#     TimestampType,
+#     ArrayType,
+#     LongType,
+#     IntegerType,
+#     ShortType,
+#     ByteType,
+#     BooleanType,
+#     NullType
+# )
+
+from pyspark.sql.functions import *
+from pyspark.sql.types import *
+
 
 # HOSTS = "192.168.30.141:6667,192.168.30.140:6667,192.168.30.139:6667"
 HOSTS = "127.0.0.1:9092"
@@ -130,32 +134,13 @@ def handle_example():
         StructField("isDdl", BooleanType()),
         StructField("data", ArrayType(StructType([
             StructField("id", LongType()),
-            StructField("name", StringType()),
-            StructField("password_digest", StringType()),
             StructField("mobile", StringType()),
-            StructField("email", StringType()),
             StructField("created_time", TimestampType()),
-            StructField("created_ip", StringType()),
-            StructField("last_login_time", TimestampType()),
-            StructField("last_login_ip", StringType()),
-            StructField("old_id", LongType()),
-            StructField("weixin_open_id", StringType()),
             StructField("gender", StringType()),
             StructField("person_id", LongType()),
             StructField("utm_source", StringType()),
-            StructField("order_cnt", ShortType()),
-            StructField("bill_status", StringType()),
-            StructField("console_remark", StringType()),
             StructField("updated_time", TimestampType()),
             StructField("app_source", StringType()),
-            StructField("is_get_authorize", ByteType()),
-            StructField("user_address_list", StringType()),
-            StructField("bankNumber", StringType()),
-            StructField("biz_event_status", StringType()),
-            StructField("biz_event_time", TimestampType()),
-            StructField("biz_event_data", StringType()),
-            StructField("invitation_code", StringType()),
-            StructField("used_invitation_code", StringType()),
         ]))),
     ])
 
