@@ -41,6 +41,31 @@ def softmax(x):
     return y
 
 
+def mean_squared_error(y: narray, t: narray):
+    """损失函数之均方误差
+    :param y: 神经网络的输出，narray
+    :param t: 监督数据（标签数据），narray
+    :return: float
+    """
+    return 0.5 * np.sum((y-t)**2)
+
+
+def cross_entropy_error(y: narray, t: narray):
+    """损失函数之交叉熵误差
+    :param y: 神经网络的输出，narray
+    :param t: 监督数据（标签数据），narray
+    :return: float
+    :note: log(0) => -inf, 所以添加非常小的数 delta，防止出现 log(0) 的计算
+    """
+    delta = 1e-7
+    if y.ndim == 1:
+        t = t.reshape(1, t.size)
+        y = y.reshape(1, y.size)
+
+    batch_size = y.shape[0]
+    return -np.sum(t*np.log(y+delta)) / batch_size
+
+
 def init_network():
     """初始化权重 W 与偏置 b"""
     W1 = narray([[0.1, 0.3, 0.5], [0.2, 0.4, 0.6]])
@@ -85,7 +110,7 @@ def backward():
 
 if __name__ == '__main__':
     network = init_network()
-    x = narray([0.1, 0.5])
-    y = forward(network, x)
-    print(y)
+    xx = narray([0.1, 0.5])
+    yy = forward(network, xx)
+    print(yy)
 
