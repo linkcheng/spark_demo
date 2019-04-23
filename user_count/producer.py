@@ -18,17 +18,17 @@ from pymysql.cursors import DictCursor
 # from config.DB import DB_CONFIG
 
 DB_CONFIG = {
-    'host': '47.93.76.136',
+    'host': '127.0.0.1',
     'port': 3306,
     'user': 'root',
-    'password': 'test1111SFY1024#',
-    'db': 'shoufuyou_v2',
+    'password': '12341234',
+    'db': 'v2',
     'charset': 'utf8',
 }
 
 # HOSTS = "192.168.30.141:6667,192.168.30.140:6667,192.168.30.139:6667"
 HOSTS = "127.0.0.1:9092"
-TOPIC = "shoufuyou_v2.User"
+TOPIC = "v2.User"
 FMT = '%Y-%m-%d %H:%M:%S'
 
 
