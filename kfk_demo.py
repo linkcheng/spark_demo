@@ -36,7 +36,7 @@ def produce_users():
     import time
     import json
     hosts = "192.168.30.141:6667,192.168.30.140:6667,192.168.30.139:6667"
-    topic = "shoufuyou_v2.User1"
+    topic = "sfy_v2.User1"
 
     client = KafkaClient(hosts=hosts)
     # 选择一个topic

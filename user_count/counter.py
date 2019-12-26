@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 """
 @author: Link 
-@contact: zheng.long@shoufuyou.com
+@contact: zheng.long@sfy.com
 @module: counter
 @date: 11/30/18 
 """
@@ -169,7 +169,7 @@ def handle_example():
 
 
 def handle():
-    topic1 = "shoufuyou_v2.User2"
+    topic1 = "sfy_v2.User2"
     schema1 = StructType([
         StructField("app_source", StringType(), True),
         StructField("created_time", TimestampType(), True),

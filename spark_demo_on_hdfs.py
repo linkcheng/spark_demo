@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 """
 @author: Link 
-@contact: zheng.long@shoufuyou.com
+@contact: zheng.long@sfy.com
 @module: spark_demo
 @date: 11/15/2018 
 """
@@ -27,7 +27,7 @@ FMT = '%Y-%m-%d %H:%M:%S'
 
 
 def word_count():
-    path = ('hdfs:///data/bi/stg/stg_shoufuyou_v2_user_day/'
+    path = ('hdfs:///data/bi/stg/stg_sfy_v2_user_day/'
             'p_day_id=20180927/delta_0000001_0000001_0000/user.txt')
     # sc.getConf().getAll()
     sc = SparkContext('yarn', 'test')
@@ -106,7 +106,7 @@ def get_users():
     for start in starts:
         # start = datetime.now()
         time.sleep(10)
-        sql = """SELECT * FROM shoufuyou_v2.User WHERE created_time>=%s"""
+        sql = """SELECT * FROM sfy_v2.User WHERE created_time>=%s"""
         cursor.execute(sql, (start, ))
         values = cursor.fetchall() or []
 
@@ -125,7 +125,7 @@ class User:
         start_str = (now - timedelta(minutes=5)).strftime(FMT)
         end_str = now.strftime(FMT)
         keys = ['mobile', 'name', 'created_time']
-        sql = """SELECT %s FROM shoufuyou_v2.User 
+        sql = """SELECT %s FROM sfy_v2.User 
             WHERE created_time>=%s and created_time<%s"""
 
         self.cursor.execute(sql, (','.join(keys), start_str, end_str))
@@ -139,7 +139,7 @@ class User:
 
 def produce_users_from_db():
     hosts = "192.168.30.141:6667,192.168.30.140:6667,192.168.30.139:6667"
-    topic = "shoufuyou_v2.User1"
+    topic = "sfy_v2.User1"
 
     client = KafkaClient(hosts=hosts)
     # 选择一个topic
@@ -154,7 +154,7 @@ def produce_users_from_db():
 
 def produce_users():
     hosts = "192.168.30.141:6667,192.168.30.140:6667,192.168.30.139:6667"
-    topic = "shoufuyou_v2.User1"
+    topic = "sfy_v2.User1"
 
     client = KafkaClient(hosts=hosts)
     # 选择一个topic
@@ -177,7 +177,7 @@ def read_kafka():
     ./bin/pyspark --queue default --master yarn --deploy-mode client
     """
     hosts = "192.168.30.141:6667,192.168.30.140:6667,192.168.30.139:6667"
-    topic = "shoufuyou_v2.User"
+    topic = "sfy_v2.User"
 
     spark = SparkSession.builder.master('yarn').appName("GetUsers").getOrCreate()
 

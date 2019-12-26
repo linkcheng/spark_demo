@@ -132,7 +132,7 @@ d = {
             "used_invitation_code": null
         }
     ],
-    "database": "shoufuyou_v2",
+    "database": "sfy_v2",
     "es": 15412341234,
     "id": 119,
     "isDdl": false,

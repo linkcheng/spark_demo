@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 """
 @author: Link 
-@contact: zheng.long@shoufuyou.com
+@contact: zheng.long@sfy.com
 @module: ml_demo 
 @date: 9/20/18 
 """

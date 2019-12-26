@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 """
 @author: Link 
-@contact: zheng.long@shoufuyou.com
+@contact: zheng.long@sfy.com
 @module: producer 
 @date: 11/30/18 
 """
@@ -22,13 +22,13 @@ DB_CONFIG = {
     'port': 3306,
     'user': 'root',
     'password': 'test1111SFY1024#',
-    'db': 'shoufuyou_v2',
+    'db': 'sfy_v2',
     'charset': 'utf8',
 }
 
 # HOSTS = "192.168.30.141:6667,192.168.30.140:6667,192.168.30.139:6667"
 HOSTS = "127.0.0.1:9092"
-TOPIC = "shoufuyou_v2.User"
+TOPIC = "sfy_v2.User"
 FMT = '%Y-%m-%d %H:%M:%S'
 
 
@@ -72,7 +72,7 @@ class User:
         start_str = (now - timedelta(minutes=5)).strftime(FMT)
         end_str = now.strftime(FMT)
         keys = ['app_source', 'created_time']
-        sql = """SELECT %s FROM shoufuyou_v2.User 
+        sql = """SELECT %s FROM sfy_v2.User 
             WHERE created_time>=%s and created_time<%s"""
 
         self.cursor.execute(sql, (','.join(keys), start_str, end_str))
@@ -164,7 +164,7 @@ def generate():
                         "used_invitation_code": null
                     }
                 ],
-                "database": "shoufuyou_v2",
+                "database": "sfy_v2",
                 "es": 1546415113000,
                 "id": 119,
                 "isDdl": false,
@@ -366,7 +366,7 @@ def generate():
                         "used_invitation_code": null
                     }
                 ],
-                "database": "shoufuyou_v2",
+                "database": "sfy_v2",
                 "es": 1546415154000,
                 "id": 121,
                 "isDdl": false,
@@ -467,7 +467,7 @@ def generate():
                         "used_invitation_code": null
                     }
                 ],
-                "database": "shoufuyou_v2",
+                "database": "sfy_v2",
                 "es": 1546415154000,
                 "id": 122,
                 "isDdl": false,
@@ -568,7 +568,7 @@ def generate():
                         "used_invitation_code": null
                     }
                 ],
-                "database": "shoufuyou_v2",
+                "database": "sfy_v2",
                 "es": 1546420198000,
                 "id": 362,
                 "isDdl": false,
@@ -669,7 +669,7 @@ def generate():
                         "used_invitation_code": null
                     }
                 ],
-                "database": "shoufuyou_v2",
+                "database": "sfy_v2",
                 "es": 1546420198000,
                 "id": 363,
                 "isDdl": false,

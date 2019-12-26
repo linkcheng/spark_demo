@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 """
 @author: Link 
-@contact: zheng.long@shoufuyou.com
+@contact: zheng.long@sfy.com
 @module: data 
 @date: 2019-01-02
 bin/kafka-console-consumer.sh --bootstrap-server  192.168.30.141:6667,192.168.30.140:6667,192.168.30.139:6667 --topic example
